@@ -58,11 +58,11 @@ class personality_test:
                 self.type.append(personality_type[0])
             else:
                 self.type.append(personality_type[1])
-        self.type = ''.join(self.type)
+        # self.type = ''.join(self.type)
 
     def open_analysis(self):
         url = "https://www.16personalities.com/{}-personality"
-        webbrowser.open_new(url.format(self.type.lower()))
+        webbrowser.open_new(url.format(self.type[0].lower()))
 
     def __call__(self, jarvis, s):
         prompt = "{black}Q{Q_id} {cyan}{left} {black}--- {green}{right}"
@@ -85,12 +85,13 @@ class personality_test:
             self.answers[Q_id] = user_input
         self.get_scores()
 
+        type_str = ''.join(self.type)
         jarvis.say(
             "{}Your personality is: {}{}{}{}".format(
                 Fore.BLUE,
                 Fore.BLACK,
                 Back.MAGENTA,
-                self.type,
+                type_str,
                 Style.RESET_ALL))
         jarvis.say(
             "Redirecting to your personality analysis\

@@ -37,7 +37,8 @@ def opening_message(jarvis):
 
     jarvis.say('')
     jarvis.say('Let\'s play !')
-    jarvis.say('You have to think of a public personality, answer to some questions and I will try to guess who it is !')
+    jarvis.say('You have to think of a public personality,' 
+               + ' answer to some questions and I will try to guess who it is !')
     jarvis.say('Rules: ')
     print_help(jarvis)
 
@@ -72,7 +73,7 @@ def main_game(jarvis):
             return
         else:
             try:
-                q = aki.answer(a)
+                q = aki.answer(akinator.Answer.from_str(a))
             except akinator.InvalidAnswerError:
                 jarvis.say("answer not understood, type \"h\" for help", Fore.MAGENTA)
 
@@ -85,7 +86,8 @@ def main_game(jarvis):
         subprocess.run([imageViewerFromCommandLine, aki.picture])  # display image of answer
     except Exception:
         pass
-    correct = jarvis.input(f"It's {aki.first_guess['name']} ({aki.first_guess['description']})! Was I correct?\n\t")
+    correct = jarvis.input(f"It's " + aki.first_guess.name +
+                           " ! \n" + aki.first_guess.description + "\nWas I correct?\n")
     if correct.lower() == "yes" or correct.lower() == "y":
         jarvis.say("Yay !!! :D", Fore.GREEN)
     else:

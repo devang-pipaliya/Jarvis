@@ -39,7 +39,7 @@ class JarvisAPI(object):
         and talk when sound is enable.
         :param text: the text to print (or talk)
         :param color: for text - use colorama (https://pypi.org/project/colorama/)
-                      e.g. Fore.BLUE
+                      e.g. Fore.CYAN
         :param speak: False-, if text shouldn't be spoken even if speech is enabled
         """
         print(color + text + Fore.RESET, flush=True)
@@ -75,8 +75,7 @@ class JarvisAPI(object):
             try:
                 value = rtype(self.input(prompt, color).replace(',', '.'))
                 if (rmin is not None and value < rmin) or (rmax is not None and value > rmax):
-                    prompt = "Sorry, needs to be between {} and {}. Try again: ".format(
-                        rmin, rmax)
+                    prompt = f"Sorry, needs to be between {rmin} and {rmax}. Try again: "
                 else:
                     return value
             except ValueError:
@@ -258,13 +257,13 @@ class JarvisAPI(object):
                 destination = get_parent_directory(path)
                 break
 
-            elif user_choice == 'no' or user_choice == 'n':
+            if user_choice == 'no' or user_choice == 'n':
                 destination = self.input('Enter the folder destination: ')
                 if not os.path.exists(destination):
                     os.makedirs(destination)
                 break
-            else:
-                self.incorrect_option()
+
+            self.incorrect_option()
 
         os.chdir(destination)
 
@@ -275,7 +274,7 @@ class JarvisAPI(object):
         A function to notify the user that an incorrect option
         has been entered and prompting him to enter a correct one
         """
-        self.say("Oops! Looks like you entered an incorrect option", Fore.RED)
+        self.say("Oops! Looks like you entered an incorrect option", Fore.MAGENTA)
         self.say("Look at the options once again:", Fore.GREEN)
 
 
@@ -290,7 +289,7 @@ def catch_all_exceptions(do, pass_self=True):
             if self._api.is_spinner_running():
                 self.spinner_stop("It seems some error has occured")
             print(
-                Fore.RED
+                Fore.MAGENTA
                 + "Some error occurred, please open an issue on github!")
             print("Here is error:")
             print('')
@@ -320,7 +319,7 @@ class CmdInterpreter(Cmd):
         self.first_reaction = first_reaction
         self.first_reaction_text = first_reaction_text
         self.prompt = prompt
-        if (command):
+        if command:
             self.first_reaction = False
             self.first_reaction_text = ""
             self.prompt = ""
@@ -346,8 +345,8 @@ class CmdInterpreter(Cmd):
             self.speech = create_voice(
                 self, gtts_status, rate=self.speech_rate)
         except Exception as e:
-            self.say("Voice not supported", Fore.RED)
-            self.say(str(e), Fore.RED)
+            self.say("Voice not supported", Fore.MAGENTA)
+            self.say(str(e), Fore.MAGENTA)
 
         self.fixed_responses = {"what time is it": "clock",
                                 "where am i": "pinpoint",
@@ -358,24 +357,26 @@ class CmdInterpreter(Cmd):
         for directory in directories:
             self._plugin_manager.add_directory(directory)
 
-        if (not command):
+        if not command:
             self._init_plugin_info()
         self._activate_plugins()
 
-        self._api.say(self.first_reaction_text)
+        if self.first_reaction:
+            self._api.say(self.first_reaction_text)
 
     def _init_plugin_info(self):
         plugin_status_formatter = {
             "disabled": len(self._plugin_manager.get_disabled()),
             "enabled": self._plugin_manager.get_number_plugins_loaded(),
-            "red": Fore.RED,
-            "blue": Fore.BLUE,
+            "magenta": Fore.MAGENTA,
+            "cyan": Fore.CYAN,
             "reset": Fore.RESET
         }
 
-        plugin_status = "{red}{enabled} {blue}plugins loaded"
+        plugin_status = "{magenta}{enabled} {cyan}plugins loaded"
         if plugin_status_formatter['disabled'] > 0:
-            plugin_status += " {red}{disabled} {blue}plugins disabled. More information: {red}status\n"
+            plugin_status += """ {magenta}{disabled} {cyan}plugins disabled.
+            More information: {magenta}status\n"""
         plugin_status += Fore.RESET
 
         self.first_reaction_text += plugin_status.format(
@@ -405,10 +406,10 @@ class CmdInterpreter(Cmd):
 
     def _plugin_update_completion(self, plugin, plugin_name):
         """Return True if completion is available"""
-        completions = [i for i in plugin.complete()]
+        completions = list(plugin.complete())
         if len(completions) > 0:
             def complete(completions):
-                def _complete_impl(self, text, line, begidx, endidx):
+                def _complete_impl(text):
                     return [i for i in completions if i.startswith(text)]
                 return _complete_impl
             setattr(
@@ -427,7 +428,7 @@ class CmdInterpreter(Cmd):
         if self._api.is_spinner_running():
             self._api.spinner_stop('Some error has occured')
 
-        self.say("Goodbye, see you later!", Fore.RED)
+        self.say("Goodbye, see you later!", Fore.MAGENTA)
         self.scheduler.stop_all()
         sys.exit()
 
@@ -437,7 +438,7 @@ class CmdInterpreter(Cmd):
 
     def error(self):
         """Jarvis let you know if an error has occurred."""
-        self.say("I could not identify your command...", Fore.RED)
+        self.say("I could not identify your command...", Fore.MAGENTA)
 
     def interrupt_handler(self, signal, frame):
         """Closes Jarvis on SIGINT signal. (Ctrl-C)"""
@@ -447,49 +448,44 @@ class CmdInterpreter(Cmd):
         """Prints plugin status status"""
         count_enabled = self._plugin_manager.get_number_plugins_loaded()
         count_disabled = len(self._plugin_manager.get_disabled())
-        self.say(
-            "{} Plugins enabled, {} Plugins disabled.".format(
-                count_enabled,
-                count_disabled))
+        self.say(f"{count_enabled} plugins enabled, {count_disabled} plugins disabled.")
 
         if "short" not in s and count_disabled > 0:
             self.say("")
             for disabled, reason in self._plugin_manager.get_disabled().items():
-                self.say(
-                    "{:<20}: {}".format(
-                        disabled,
-                        " OR ".join(reason)))
+                self.say(f"{disabled:<20}: {' OR '.join(reason)}")
+
 
     def do_help(self, arg):
         if arg:
             Cmd.do_help(self, arg)
         else:
             self.say("")
-            headerString = "These are valid commands for Jarvis"
-            formatString = "Format: command ([aliases for command])"
-            self.say(headerString)
-            self.say(formatString, Fore.BLUE)
-            pluginDict = self._plugin_manager.get_plugins()
-            uniquePlugins = {}
-            for key in pluginDict.keys():
-                plugin = pluginDict[key]
-                if(plugin not in uniquePlugins.keys()):
-                    uniquePlugins[plugin.get_name()] = plugin
-            helpOutput = []
-            for name in sorted(uniquePlugins.keys()):
-                if (name == "help"):
+            header_string = "These are valid commands for Jarvis"
+            format_string = "Format: command ([aliases for command])"
+            self.say(header_string)
+            self.say(format_string, Fore.CYAN)
+            plugin_dict = self._plugin_manager.get_plugins()
+            unique_plugins = {}
+            for key in plugin_dict.keys():
+                plugin = plugin_dict[key]
+                if plugin not in unique_plugins:
+                    unique_plugins[plugin.get_name()] = plugin
+            help_output = []
+            for name in sorted(unique_plugins.keys()):
+                if name == "help":
                     continue
                 try:
-                    aliasString = ", ".join(uniquePlugins[name].alias())
-                    if (aliasString != ""):
-                        pluginOutput = "* " + name + " (" + aliasString + ")"
-                        helpOutput.append(pluginOutput)
+                    alias_string = ", ".join(unique_plugins[name].alias())
+                    if alias_string != "":
+                        plugin_output = "* " + name + " (" + alias_string + ")"
+                        help_output.append(plugin_output)
                     else:
-                        helpOutput.append("* " + name)
+                        help_output.append("* " + name)
                 except AttributeError:
-                    helpOutput.append("* " + name)
+                    help_output.append("* " + name)
 
-            Cmd.columnize(self, helpOutput)
+            Cmd.columnize(self, help_output)
 
     def help_status(self):
         self.say("Prints info about enabled or disabled plugins")

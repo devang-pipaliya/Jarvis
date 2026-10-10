@@ -1,6 +1,6 @@
-akinator.py
 archey4==4.6.0.post1; sys_platform != 'darwin'
 beautifulsoup4
+climage
 colorama
 distro
 flake8
@@ -9,20 +9,21 @@ geopy
 gitpython
 googletrans
 IMDbPY
+matplotlib
 mock
 nltk
-pathlib
+pathlib2; python_version < '3.4'
 pdfkit
 pick
 pluginmanager
 psutil; sys_platform == 'win32'
 pycricbuzz
 pydoc-markdown
-pydub
 pyjokes
-pync==1.6.1; sys_platform == 'darwin'
+markdown
+pync; sys_platform == 'darwin'
 pypiwin32; sys_platform == 'win32'
-pyreadline; sys_platform == 'win32'
+pyreadline3; sys_platform == 'win32'
 python-dateutil
 pytimeparse
 pyttsx3 == 2.71; sys_platform != 'darwin'
@@ -33,14 +34,22 @@ speedtest-cli
 sympy
 tabulate
 termdown
-opencv-python
+opencv-python-headless
 whois
 wikipedia
 win10toast; sys_platform == 'win32'
 gtts
-playsound
+playsound==1.2.2 ; python_version < "3.12"
+git+https://github.com/taconi/playsound.git#egg=playsound ; python_version >= "3.12"
 windows-curses; sys_platform == 'win32'
 Image
 img2pdf
 pdf2image
 python-nmap
+yeelight
+haversine
+FlightRadarAPI
+github3.py
+wonderwords
+pyenchant
+halo

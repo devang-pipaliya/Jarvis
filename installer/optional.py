@@ -3,7 +3,6 @@ import sys
 
 from helper import executable_exists
 
-
 PackageManager = {
     "macos": "brew install",
     "linux": {
@@ -39,7 +38,7 @@ PortAudio = {
             'suse': 'python3-PyAudio python3-devel',
             'debian': 'python3-pyaudio python3-dev'
         }},
-    "description": "Required for voice control",
+    "description": "Required for voice control and music recognition",
     "instruction": """\
 Please install python-binding 'pyaudio' manually."
 For more details go to the below link:
@@ -58,7 +57,7 @@ Fasttext = {
     "name": "Fasttext language recognition",
     "pip": ['fasttext'],
     "description": "Fasttext is a text classification library capable of detecting 176 languages.",
-    "instructions": "https://github.com/facebookresearch/fastText/#requirements"
+    "instruction": "https://github.com/facebookresearch/fastText/#requirements"
 }
 
 
@@ -82,7 +81,7 @@ NativeNotification = {
 FFMPEG = {
     "name": "ffmpeg",
     "executable": ['ffmpeg'],
-    "description": "Download music as .mp3 instead .webm",
+    "description": "Download music as .mp3 instead .webm. Also needed for music recognition",
     "instruction": "Please install 'ffmpeg' manually using your local package manager!",
     "package_guess": {
         "macos": "ffmpeg",
@@ -147,7 +146,32 @@ HTOP = {
 }
 
 
-OPTIONAL_REQUIREMENTS = [PortAudio, RequestsSecurity, FFMPEG, ESPEAK, WKHTMLTOPDF, Fasttext,HTOP]
+PYAUTOGUI = {
+    "name": "pyautogui",
+    "pip": ['pyautogui'],
+    "description": "Required for automation (e.g. automatic key presses)",
+    "instrauction": ""
+}
+
+
+AKINATOR = {
+    "name": "akinator.py",
+    "pip": ['akinator.py'],
+    "description": "Required for akinator",
+    "instrauction": ""
+}
+
+
+PYDUB = {
+    "name": "pydub",
+    "pip": ['pydub', 'shazamio'],
+    "description": "Required for voice / music recognision",
+    "instrauction": ""
+}
+
+
+
+OPTIONAL_REQUIREMENTS = [PortAudio, RequestsSecurity, FFMPEG, ESPEAK, WKHTMLTOPDF, Fasttext, HTOP, AKINATOR, PYDUB]
 
 
 if not sys.platform == "darwin":

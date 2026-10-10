@@ -48,9 +48,8 @@ def shop(shopName):
     return startingURL
 
 
-# Gets the first part of search url and adds the search term to generate the full url
 def generateURL(startingURL, searchTerm, splitted):
-    if(splitted):
+    if splitted:
         splittedTerm = searchTerm
     else:
         splittedTerm = searchTerm.split(" ")

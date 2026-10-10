@@ -114,10 +114,13 @@ class rockpaperscissors():
 
         while True:
             rounds = input(prompt)
-            if (int(rounds) <= 100):
-                return rounds
-            else:
-                prompt = 'Laps should be under 100 \n'
+            try:
+                if (int(rounds) <= 100):
+                    return rounds
+                else:
+                    prompt = 'Laps should be under 100 \n'
+            except:
+                prompt = 'Laps should be a number \n'
 
     def get_users(self, prompt):
 
@@ -154,7 +157,8 @@ class rockpaperscissors():
             condition = "T"
 
         else:
-            if ((umove == "r" and jmove == "s") or (umove == "s" and jmove == "p") or (umove == "p" and jmove == "r")):
+            moves_that_win = {'r': 's', 's': 'p', 'p': 'r'}
+            if jmove == moves_that_win[umove]:
                 condition = "W"
             else:
                 condition = "L"
